@@ -16,7 +16,7 @@ public class ServiceProxyController {
 	private ProxyService proxyService;
 	
 	@RequestMapping(value = "**", method = RequestMethod.GET)
-	public ResponseEntity<String> getService(final HttpServletRequest request) {
+	public ResponseEntity<String> getService(HttpServletRequest request) {
 		return proxyService.callService(request);
 	}
 }

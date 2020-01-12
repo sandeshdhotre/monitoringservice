@@ -1,0 +1,25 @@
+pipeline {
+   agent any
+
+   tools {
+      maven "M3"
+   }
+
+   stages {
+      stage('Build') {
+         steps {
+            // Get some code from a GitHub repository
+            git 'https://github.com/sandeshdhotre/monitoringservice.git'
+
+            // Run Maven on a Unix agent.
+            sh "mvn clean install"
+         }
+      }
+      stage('BuildImage') {
+         steps {
+            // Run Docker Command to Build Image.
+            sh "docker build -t monitoringservice ./src/main/resourcesl"
+         }
+      }      
+   }
+}

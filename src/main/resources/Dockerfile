@@ -2,7 +2,8 @@ FROM openjdk
 
 WORKDIR /usr/app
 
-COPY . /usr/app/
+COPY ../target/* /usr/app/
+
 EXPOSE 9010
 
-ENTRYPOINT [ "java","-jar", "./hello.jar" ]
+ENTRYPOINT [ "java","-jar", "./monitoring-service.jar" ]

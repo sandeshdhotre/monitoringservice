@@ -1,12 +1,13 @@
-package org.monitoring.controller;
+package org.monitoring.scheduler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collection;
-
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.monitoring.MonitoringServiceApplication;
 import org.monitoring.entity.ServiceDetail;
 import org.monitoring.entity.ServiceDetail.Status;
 import org.monitoring.repository.ServiceRepository;
@@ -23,7 +24,8 @@ import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@SpringBootTest(classes = {MonitorScheduler.class, ServiceRepository.class, RestTemplate.class})
+@TestInstance(value = Lifecycle.PER_CLASS)
 public class MonitoringSchedulerTestUsingMockServer {
 
 	@Autowired
@@ -48,12 +50,37 @@ public class MonitoringSchedulerTestUsingMockServer {
 		serviceServer = MockRestServiceServer.createServer(restTemplate);
 	}
 	
-	public void testAllServiceUp() {
+	@Test
+	public void testServiceUp() {
 		serviceServer.expect(ExpectedCount.times(3), MockRestRequestMatchers.anything()).
 		andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-        .andRespond(MockRestResponseCreators.withSuccess("Success", MediaType.ALL));
+        .andRespond(MockRestResponseCreators.withSuccess("Success", MediaType.TEXT_PLAIN));
+		monitoringScheduler.scheduleTaskWithFixedRate();
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		serviceServer.verify();
 		Collection<ServiceDetail> serviceList = serviceRepository.getAllServiceDetail();
 		serviceList.stream().forEach(s -> assertEquals(s.getStatus(), Status.UP));
+		serviceServer.reset();
+	}
+	
+	
+	@Test
+	public void testServiceDown() {
+		serviceServer.expect(ExpectedCount.times(3), MockRestRequestMatchers.anything()).
+		andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+        .andRespond(MockRestResponseCreators.withServerError());
+		monitoringScheduler.scheduleTaskWithFixedRate();
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		serviceServer.verify();
+		Collection<ServiceDetail> serviceList = serviceRepository.getAllServiceDetail();
+		serviceList.stream().forEach(s -> assertEquals(s.getStatus(), Status.DOWN));
 	}
 }

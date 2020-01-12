@@ -1,7 +1,6 @@
 package org.monitoring.controller;
 
 import java.util.Collection;
-import javax.websocket.server.PathParam;
 import org.monitoring.entity.ServiceDetail;
 import org.monitoring.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +19,7 @@ public class MonitoringController {
 	
 	@RequestMapping(value="/register", method = RequestMethod.POST)
 	public ServiceDetail registerService(@RequestBody ServiceDetail service) {
-		serviceRepository.addService(service);
-		return service;
+		return serviceRepository.addService(service);
 	}
 	
 	@RequestMapping(value= "/deregister/{serviceId}", method = RequestMethod.POST)

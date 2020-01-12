@@ -30,7 +30,8 @@ public class ServiceRepository {
 		service.setLastDownTime(null);
 		service.setTotalDownTime(0L);
 		service.setCurrentDownTime(0L);
-		return serviceMap.put(id, service);
+		serviceMap.put(id, service);
+		return service;
 	}
 	
 	public ServiceDetail removeService(final Integer id) {
