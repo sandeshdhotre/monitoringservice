@@ -3,7 +3,10 @@ package org.monitoring.repository;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.hibernate.validator.internal.util.ConcurrentReferenceHashMap.Option;
 import org.monitoring.entity.ServiceDetail;
 import org.monitoring.entity.ServiceDetail.Status;
 import org.springframework.stereotype.Repository;
@@ -38,7 +41,10 @@ public class ServiceRepository {
 		return serviceMap.remove(id);
 	}
 	
-	public ServiceDetail getServiceByServiceURL(final String url) {
-		return serviceMap.values().stream().filter(s -> url.contains(s.getPath())).findFirst().get();
+	public Optional<ServiceDetail> getServiceByServiceURL(final String url) {
+		if(serviceMap.values().size()!=0) {
+			return serviceMap.values().stream().filter(s -> url.contains(s.getPath())).findFirst();	
+		}
+		return Optional.empty();
 	}
 }

@@ -4,6 +4,8 @@ import java.util.Collection;
 import org.monitoring.entity.ServiceDetail;
 import org.monitoring.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +20,9 @@ public class MonitoringController {
 	ServiceRepository serviceRepository;
 	
 	@RequestMapping(value="/register", method = RequestMethod.POST)
-	public ServiceDetail registerService(@RequestBody ServiceDetail service) {
-		return serviceRepository.addService(service);
+	public ResponseEntity<ServiceDetail> registerService(@RequestBody ServiceDetail service) {
+		ServiceDetail serviceDetails = serviceRepository.addService(service);
+		return new ResponseEntity<ServiceDetail>(serviceDetails, HttpStatus.CREATED);
 	}
 	
 	@RequestMapping(value= "/deregister/{serviceId}", method = RequestMethod.POST)

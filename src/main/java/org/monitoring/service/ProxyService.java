@@ -1,5 +1,6 @@
 package org.monitoring.service;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.servlet.http.HttpServletRequest;
 import org.monitoring.entity.ServiceDetail;
@@ -30,7 +31,9 @@ public class ProxyService {
 	public ResponseEntity<String> callService(final HttpServletRequest request){
 		String url = request.getRequestURI();
 		
-		ServiceDetail service = serviceRepository.getServiceByServiceURL(url);
+		Optional<ServiceDetail> serviceDetails = serviceRepository.getServiceByServiceURL(url);
+		
+		ServiceDetail service = serviceDetails.orElse(null);
 		
 		ResponseEntity<String> response = new ResponseEntity<String>("No Service Found for Given URL", HttpStatus.BAD_REQUEST);
 		
@@ -42,45 +45,34 @@ public class ProxyService {
 			final UriComponents uri = uriBuilder.build();
 			try {
 				response = restTemplate.getForEntity(uri.toString(), String.class);	
-				AtomicLong count = service.getRequestCount().get(response.getStatusCode());
-				if (count == null) {
-					count = new AtomicLong(1);
-					service.getRequestCount().put(response.getStatusCode(), count);
-				}
-				else {
-					count.incrementAndGet();
-				}
-				
+				setCount(service, response);
 			}
 			catch(RestClientResponseException e) {
 				logger.error("RestClient Exception"+e.toString());
 				int rawStatus = e.getRawStatusCode();
 				HttpStatus status = HttpStatus.valueOf(rawStatus);
 				response = new ResponseEntity<String>(status);
-				AtomicLong count = service.getRequestCount().get(response.getStatusCode());
-				if (count == null) {
-					count = new AtomicLong(1);
-					service.getRequestCount().put(response.getStatusCode(), count);
-				}
-				else {
-					count.incrementAndGet();
-				}
+				setCount(service, response);
 			}
 			catch(ResourceAccessException e) {
 				logger.error("Service Down"+e.toString());
 				HttpStatus status = HttpStatus.SERVICE_UNAVAILABLE;
 				response = new ResponseEntity<String>(status);
-				AtomicLong count = service.getRequestCount().get(response.getStatusCode());
-				if (count == null) {
-					count = new AtomicLong(1);
-					service.getRequestCount().put(response.getStatusCode(), count);
-				}
-				else {
-					count.incrementAndGet();
-				}
+				setCount(service, response);
 			}
 		}
-		
 		return response;
+	}
+	
+	private void setCount(ServiceDetail service, ResponseEntity<String> response) {
+		AtomicLong count = service.getRequestCount().get(response.getStatusCode());
+		if (count == null) {
+			count = new AtomicLong(1);
+			service.getRequestCount().put(response.getStatusCode(), count);
+		}
+		else {
+			count.incrementAndGet();
+		}
+		
 	}
 }

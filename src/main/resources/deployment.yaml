@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: monitoring-service-deployment
+ labels:
+  app: monitoring-service-deployment
+spec:
+ replicas: 1
+ selector:
+  matchLabels:
+   app: monitoring-service
+ template:
+  metadata:
+   labels:
+    app: monitoring-service
+  spec:
+   containers:
+   - name: monitoring-service
+     image: sandeshdhotre/monitoringapp
+     ports:
+     - name: mport
+       containerPort: 9010

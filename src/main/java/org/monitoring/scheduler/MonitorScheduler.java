@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import org.monitoring.entity.ServiceDetail;
 import org.monitoring.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -20,11 +21,13 @@ public class MonitorScheduler {
 	@Autowired
 	RestTemplate restTemplate;
 	
-	private final int poolSize = 10;
-	
 	private final long constant = 10000L;
 	
-	ExecutorService executorService = Executors.newFixedThreadPool(poolSize);
+	private ExecutorService executorService;
+	
+	public MonitorScheduler(@Value("${monitoring.pool.size:10}") String size) {
+		executorService = Executors.newFixedThreadPool(Integer.parseInt(size));
+	}
 	
 	@Scheduled(fixedRate = constant)
 	public void scheduleTaskWithFixedRate() {

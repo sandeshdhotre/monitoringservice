@@ -18,13 +18,14 @@ pipeline {
       stage('BuildImage') {
          steps {
             // Run Docker Command to Build Image.
-            sh "docker build -t monitoringservice ./src/main/resources"
+            sh "docker build -t sandeshdhotre/monitoringapp -f ./src/main/resources/Dockerfile ."
          }
       }
       stage('PushImage') {
          steps {
-            withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
-			sh "docker login -u sandeshdhotre -p ${dockerhub}"}
+            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dockerhub',
+			usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]){
+			sh "docker login -u ${USERNAME} -p ${PASSWORD}"}
             sh "docker push sandeshdhotre/monitoringapp"
          }
       }      
