@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class ServiceRepository {
 	
-	Map<String, ServiceDetail> serviceMap = new HashMap<String, ServiceDetail>();
+	Map<Integer, ServiceDetail> serviceMap = new HashMap<Integer, ServiceDetail>();
 	
 	AtomicInteger sequence = new AtomicInteger(1);
 	
@@ -20,8 +20,8 @@ public class ServiceRepository {
 		return serviceMap.values();
 	}
 	
-	public ServiceDetail getServiceDetail(final String name) {
-		return serviceMap.get(name);
+	public ServiceDetail getServiceDetail(final Integer id) {
+		return serviceMap.get(id);
 	}
 	
 	public ServiceDetail addService(final ServiceDetail service) {
@@ -31,17 +31,17 @@ public class ServiceRepository {
 		service.setLastDownTime(null);
 		service.setTotalDownTime(0L);
 		service.setCurrentDownTime(0L);
-		serviceMap.put(service.getServiceName(), service);
+		serviceMap.put(id, service);
 		return service;
 	}
 	
-	public ServiceDetail removeService(final String name) {
-		return serviceMap.remove(name);
+	public ServiceDetail removeService(final Integer id) {
+		return serviceMap.remove(id);
 	}
 	
-	public Optional<ServiceDetail> getServiceByServiceName(final String name) {
+	public Optional<ServiceDetail> getServiceByServiceURL(final String url) {
 		if(serviceMap.values().size()!=0) {
-			return Optional.of(serviceMap.get(name));
+			return serviceMap.values().stream().filter(s -> url.contains(s.getPath())).findFirst();	
 		}
 		return Optional.empty();
 	}

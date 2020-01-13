@@ -29,11 +29,9 @@ public class ProxyService {
 	private Logger logger = LoggerFactory.getLogger(ProxyService.class); 
 
 	public ResponseEntity<String> callService(final HttpServletRequest request){
-		final String url = request.getRequestURI();
+		String url = request.getRequestURI();
 		
-		final String serviceName = url.substring(url.lastIndexOf('/') + 1);
-		
-		Optional<ServiceDetail> serviceDetails = serviceRepository.getServiceByServiceName(serviceName);
+		Optional<ServiceDetail> serviceDetails = serviceRepository.getServiceByServiceURL(url);
 		
 		ServiceDetail service = serviceDetails.orElse(null);
 		

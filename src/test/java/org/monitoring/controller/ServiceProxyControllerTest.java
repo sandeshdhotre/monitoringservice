@@ -56,7 +56,6 @@ public class ServiceProxyControllerTest {
 		serviceServer.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(url)).
 		andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
         .andRespond(MockRestResponseCreators.withSuccess("Welcome", MediaType.TEXT_PLAIN));
-		
 		MockHttpServletRequest request = new MockHttpServletRequest(HttpMethod.GET.toString(), "welcome");
 		ResponseEntity<String> response = controller.getService(request);
 		assertEquals(response.getStatusCode(), HttpStatus.OK);

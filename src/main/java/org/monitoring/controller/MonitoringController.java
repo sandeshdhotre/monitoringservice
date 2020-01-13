@@ -26,9 +26,10 @@ public class MonitoringController {
 		return new ResponseEntity<ServiceDetail>(serviceDetails, HttpStatus.CREATED);
 	}
 	
-	@RequestMapping(value= "/register/{serviceName}", method = RequestMethod.DELETE)
-	public ResponseEntity<Boolean> unregisterService(@PathVariable("serviceName") String serviceName) {
-		serviceRepository.removeService(serviceName);
+	@RequestMapping(value= "/register/{serviceId}", method = RequestMethod.DELETE)
+	public ResponseEntity<Boolean> unregisterService(@PathVariable("serviceId") String id) {
+		Integer serviceId = Integer.parseInt(id);
+		serviceRepository.removeService(serviceId);
 		return new ResponseEntity<Boolean>(true, HttpStatus.OK);
 	}
 	
@@ -38,15 +39,17 @@ public class MonitoringController {
 		return new ResponseEntity<Collection<ServiceDetail>>(list, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/register/{serviceName}", method = RequestMethod.GET)
-	public ResponseEntity<ServiceDetail> getServiceDetails(@PathVariable("serviceName") String serviceName) {
-		ServiceDetail serviceDetails = serviceRepository.getServiceDetail(serviceName);
+	@RequestMapping(value = "/register/{id}", method = RequestMethod.GET)
+	public ResponseEntity<ServiceDetail> getServiceDetails(@PathVariable("id") String id) {
+		Integer serviceId = Integer.parseInt(id);
+		ServiceDetail serviceDetails = serviceRepository.getServiceDetail(serviceId);
 		return new ResponseEntity<ServiceDetail>(serviceDetails, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value="/register/{serviceName}/reset", method = RequestMethod.PUT)
-	public ResponseEntity<ServiceDetail> resetServiceAvailability(@PathVariable("serviceName") String serviceName) {
-		ServiceDetail service = serviceRepository.getServiceDetail(serviceName);
+	@RequestMapping(value="/register/{id}/reset", method = RequestMethod.PUT)
+	public ResponseEntity<ServiceDetail> resetServiceAvailability(@PathVariable("id") String id) {
+		Integer serviceId = Integer.parseInt(id);
+		ServiceDetail service = serviceRepository.getServiceDetail(serviceId);
 		service.setStatus(Status.UP);
 		service.setLastDownTime(null);
 		service.setCurrentDownTime(0L);

@@ -28,7 +28,7 @@ public class MonitoringControllerTest {
 	public void testRegisterService() {
 		ServiceDetail service1 = new ServiceDetail("WelcomeService", "http://localhost:8080/","welcome");
 		ResponseEntity<ServiceDetail> response = controller.registerService(service1);
-		ResponseEntity<ServiceDetail> getResponse = controller.getServiceDetails(response.getBody().getServiceName());
+		ResponseEntity<ServiceDetail> getResponse = controller.getServiceDetails(String.valueOf(response.getBody().getId()));
 		assertEquals(response.getBody(), getResponse.getBody());
 	}
 	
@@ -36,9 +36,9 @@ public class MonitoringControllerTest {
 	public void testUnregisterService() {
 		ServiceDetail service1 = new ServiceDetail("WelcomeService", "http://localhost:8080/","welcome");
 		ResponseEntity<ServiceDetail> response = controller.registerService(service1);
-		controller.unregisterService(String.valueOf(response.getBody().getServiceName()));
-		ResponseEntity<ServiceDetail> getResponse = controller.getServiceDetails(String.valueOf(response.getBody().getServiceName()));
-		assertNull(getResponse);
+		controller.unregisterService(String.valueOf(response.getBody().getId()));
+		ResponseEntity<ServiceDetail> getResponse = controller.getServiceDetails(String.valueOf(response.getBody().getId()));
+		assertNull(getResponse.getBody());
 	}
 	
 	@Test
