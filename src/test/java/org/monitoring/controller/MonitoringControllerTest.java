@@ -11,6 +11,7 @@ import org.monitoring.entity.ServiceDetail;
 import org.monitoring.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
@@ -26,17 +27,17 @@ public class MonitoringControllerTest {
 	@Test
 	public void testRegisterService() {
 		ServiceDetail service1 = new ServiceDetail("WelcomeService", "http://localhost:8080/","welcome");
-		ServiceDetail response = controller.registerService(service1);
-		ServiceDetail getResponse = controller.getServiceDetails(String.valueOf(response.getId()));
-		assertEquals(response, getResponse);
+		ResponseEntity<ServiceDetail> response = controller.registerService(service1);
+		ResponseEntity<ServiceDetail> getResponse = controller.getServiceDetails(response.getBody().getServiceName());
+		assertEquals(response.getBody(), getResponse.getBody());
 	}
 	
 	@Test
 	public void testUnregisterService() {
 		ServiceDetail service1 = new ServiceDetail("WelcomeService", "http://localhost:8080/","welcome");
-		ServiceDetail response = controller.registerService(service1);
-		controller.unregisterService(String.valueOf(response.getId()));
-		ServiceDetail getResponse = controller.getServiceDetails(String.valueOf(response.getId()));
+		ResponseEntity<ServiceDetail> response = controller.registerService(service1);
+		controller.unregisterService(String.valueOf(response.getBody().getServiceName()));
+		ResponseEntity<ServiceDetail> getResponse = controller.getServiceDetails(String.valueOf(response.getBody().getServiceName()));
 		assertNull(getResponse);
 	}
 	
@@ -48,7 +49,7 @@ public class MonitoringControllerTest {
 		controller.registerService(service1);
 		controller.registerService(service2);
 		controller.registerService(service3);
-		Collection<ServiceDetail> list = controller.getRegisteredServiceList();
-		assertEquals(3, list.size());
+		ResponseEntity<Collection<ServiceDetail>> list = controller.getRegisteredServiceList();
+		assertEquals(3, list.getBody().size());
 	}
 }

@@ -19,17 +19,15 @@ public class MonitorScheduler {
 	private ServiceRepository service;	
 	
 	@Autowired
-	RestTemplate restTemplate;
-	
-	private final long constant = 10000L;
+	private RestTemplate restTemplate;
 	
 	private ExecutorService executorService;
 	
-	public MonitorScheduler(@Value("${monitoring.pool.size:10}") String size) {
+	public MonitorScheduler(@Value("${monitoring.pool.size:30000}") String size) {
 		executorService = Executors.newFixedThreadPool(Integer.parseInt(size));
 	}
 	
-	@Scheduled(fixedRate = constant)
+	@Scheduled(fixedRateString = "${fixed.rate.prop:30}")
 	public void scheduleTaskWithFixedRate() {
 		Collection<ServiceDetail> serviceList = service.getAllServiceDetail();
 		

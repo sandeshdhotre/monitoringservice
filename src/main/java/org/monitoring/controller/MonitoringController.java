@@ -2,6 +2,7 @@ package org.monitoring.controller;
 
 import java.util.Collection;
 import org.monitoring.entity.ServiceDetail;
+import org.monitoring.entity.ServiceDetail.Status;
 import org.monitoring.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MonitoringController {
 	
 	@Autowired
-	ServiceRepository serviceRepository;
+	private ServiceRepository serviceRepository;
 	
 	@RequestMapping(value="/register", method = RequestMethod.POST)
 	public ResponseEntity<ServiceDetail> registerService(@RequestBody ServiceDetail service) {
@@ -25,31 +26,31 @@ public class MonitoringController {
 		return new ResponseEntity<ServiceDetail>(serviceDetails, HttpStatus.CREATED);
 	}
 	
-	@RequestMapping(value= "/deregister/{serviceId}", method = RequestMethod.POST)
-	public boolean unregisterService(@PathVariable("serviceId") String id) {
-		Integer serviceId = Integer.parseInt(id);
-		serviceRepository.removeService(serviceId);
-		return true;
+	@RequestMapping(value= "/register/{serviceName}", method = RequestMethod.DELETE)
+	public ResponseEntity<Boolean> unregisterService(@PathVariable("serviceName") String serviceName) {
+		serviceRepository.removeService(serviceName);
+		return new ResponseEntity<Boolean>(true, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/register", method = RequestMethod.GET)
-	public Collection<ServiceDetail> getRegisteredServiceList(){
-		return serviceRepository.getAllServiceDetail();
+	public ResponseEntity<Collection<ServiceDetail>> getRegisteredServiceList(){
+		Collection<ServiceDetail> list = serviceRepository.getAllServiceDetail();
+		return new ResponseEntity<Collection<ServiceDetail>>(list, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/register/{id}", method = RequestMethod.GET)
-	public ServiceDetail getServiceDetails(@PathVariable("id") String id) {
-		Integer serviceId = Integer.parseInt(id);
-		return serviceRepository.getServiceDetail(serviceId);
+	@RequestMapping(value = "/register/{serviceName}", method = RequestMethod.GET)
+	public ResponseEntity<ServiceDetail> getServiceDetails(@PathVariable("serviceName") String serviceName) {
+		ServiceDetail serviceDetails = serviceRepository.getServiceDetail(serviceName);
+		return new ResponseEntity<ServiceDetail>(serviceDetails, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value="/register/{id}/reset", method = RequestMethod.GET)
-	public ServiceDetail resetServiceAvailability(@PathVariable("id") String id) {
-		Integer serviceId = Integer.parseInt(id);
-		ServiceDetail service = serviceRepository.getServiceDetail(serviceId);
+	@RequestMapping(value="/register/{serviceName}/reset", method = RequestMethod.PUT)
+	public ResponseEntity<ServiceDetail> resetServiceAvailability(@PathVariable("serviceName") String serviceName) {
+		ServiceDetail service = serviceRepository.getServiceDetail(serviceName);
+		service.setStatus(Status.UP);
 		service.setLastDownTime(null);
 		service.setCurrentDownTime(0L);
 		service.setTotalDownTime(0L);
-		return service;
+		return new ResponseEntity<ServiceDetail>(service, HttpStatus.OK);
 	}
 }

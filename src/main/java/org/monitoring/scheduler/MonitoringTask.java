@@ -17,7 +17,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 public class MonitoringTask implements Runnable{
 	
-	
 	private RestTemplate restTemplate;
 	
 	private ServiceDetail service;
