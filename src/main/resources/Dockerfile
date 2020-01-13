@@ -2,7 +2,7 @@ FROM openjdk
 
 WORKDIR /usr/app
 
-COPY ./target/monitoring-service.jar .
+COPY ./target/monitoring-service.jar /usr/app
 
 EXPOSE 9010
 
