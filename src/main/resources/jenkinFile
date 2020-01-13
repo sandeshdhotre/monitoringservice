@@ -18,7 +18,7 @@ pipeline {
       stage('BuildImage') {
          steps {
             // Run Docker Command to Build Image.
-            sh "docker build -t monitoringservice ./src/main/resourcesl"
+            sh "docker build -t monitoringservice ./src/main/resources"
          }
       }      
    }
